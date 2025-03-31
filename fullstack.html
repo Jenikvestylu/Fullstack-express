@@ -1,0 +1,323 @@
+<!-- views/index.ejs -->
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-shop Demo</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1>E-shop Demo</h1>
+    <nav>
+      <ul>
+        <li><a href="/">Domů</a></li>
+        <li><a href="/products">Produkty</a></li>
+        <li><a href="/orders">Objednávky</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <main>
+    <h2>Seznam produktů</h2>
+    
+    <div class="action-buttons">
+      <a href="/product/add" class="button">Přidat nový produkt</a>
+      <a href="/order/add" class="button">Vytvořit objednávku</a>
+    </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Název</th>
+          <th>Cena</th>
+          <th>Kategorie</th>
+          <th>Akce</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% products.forEach(product => { %>
+          <tr>
+            <td><%= product.id %></td>
+            <td><%= product.product_name %></td>
+            <td><%= product.price %> Kč</td>
+            <td><%= product.category_name %></td>
+            <td class="actions">
+              <a href="/product/edit/<%= product.id %>" class="button small">Upravit</a>
+              <form action="/product/delete/<%= product.id %>" method="POST" onsubmit="return confirm('Opravdu chcete smazat tento produkt?')">
+                <button type="submit" class="button small danger">Smazat</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 E-shop Demo</p>
+  </footer>
+</body>
+</html>
+
+<!-- views/products.ejs -->
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produkty | E-shop Demo</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1>E-shop Demo</h1>
+    <nav>
+      <ul>
+        <li><a href="/">Domů</a></li>
+        <li><a href="/products" class="active">Produkty</a></li>
+        <li><a href="/orders">Objednávky</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <main>
+    <h2>Filtrování produktů</h2>
+    
+    <div class="filter-form">
+      <form action="/products" method="GET">
+        <label for="category">Filtrovat podle kategorie:</label>
+        <select name="category" id="category">
+          <option value="">Všechny kategorie</option>
+          <% categories.forEach(category => { %>
+            <option value="<%= category.id %>" <%= selectedCategory == category.id ? 'selected' : '' %>><%= category.name %></option>
+          <% }) %>
+        </select>
+        <button type="submit" class="button">Filtrovat</button>
+      </form>
+    </div>
+    
+    <div class="action-buttons">
+      <a href="/product/add" class="button">Přidat nový produkt</a>
+    </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Název</th>
+          <th>Cena</th>
+          <th>Kategorie</th>
+          <th>Akce</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% products.forEach(product => { %>
+          <tr>
+            <td><%= product.id %></td>
+            <td><%= product.name %></td>
+            <td><%= product.price %> Kč</td>
+            <td><%= product.category_name %></td>
+            <td class="actions">
+              <a href="/product/edit/<%= product.id %>" class="button small">Upravit</a>
+              <form action="/product/delete/<%= product.id %>" method="POST" onsubmit="return confirm('Opravdu chcete smazat tento produkt?')">
+                <button type="submit" class="button small danger">Smazat</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 E-shop Demo</p>
+  </footer>
+</body>
+</html>
+
+<!-- views/orders.ejs -->
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Objednávky | E-shop Demo</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1>E-shop Demo</h1>
+    <nav>
+      <ul>
+        <li><a href="/">Domů</a></li>
+        <li><a href="/products">Produkty</a></li>
+        <li><a href="/orders" class="active">Objednávky</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <main>
+    <h2>Seznam objednávek</h2>
+    
+    <div class="action-buttons">
+      <a href="/order/add" class="button">Vytvořit novou objednávku</a>
+    </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Zákazník</th>
+          <th>Datum</th>
+          <th>Produkt</th>
+          <th>Kategorie</th>
+          <th>Cena za kus</th>
+          <th>Počet</th>
+          <th>Celkem</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders.forEach(order => { %>
+          <tr>
+            <td><%= order.id %></td>
+            <td><%= order.customer_name %></td>
+            <td><%= order.order_date %></td>
+            <td><%= order.product_name %></td>
+            <td><%= order.category_name %></td>
+            <td><%= order.price %> Kč</td>
+            <td><%= order.quantity %></td>
+            <td><%= (order.price * order.quantity).toFixed(2) %> Kč</td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 E-shop Demo</p>
+  </footer>
+</body>
+</html>
+
+<!-- views/product_form.ejs -->
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= product ? 'Upravit produkt' : 'Přidat produkt' %> | E-shop Demo</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1>E-shop Demo</h1>
+    <nav>
+      <ul>
+        <li><a href="/">Domů</a></li>
+        <li><a href="/products">Produkty</a></li>
+        <li><a href="/orders">Objednávky</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <main>
+    <h2><%= product ? 'Upravit produkt' : 'Přidat nový produkt' %></h2>
+    
+    <div class="form-container">
+      <form action="<%= product ? '/product/edit/' + product.id : '/product/add' %>" method="POST">
+        <div class="form-group">
+          <label for="name">Název produktu:</label>
+          <input type="text" id="name" name="name" value="<%= product ? product.name : '' %>" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="price">Cena (Kč):</label>
+          <input type="number" id="price" name="price" min="0" step="0.01" value="<%= product ? product.price : '' %>" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="category_id">Kategorie:</label>
+          <select id="category_id" name="category_id" required>
+            <option value="">-- Vyberte kategorii --</option>
+            <% categories.forEach(category => { %>
+              <option value="<%= category.id %>" <%= (product && product.category_id == category.id) ? 'selected' : '' %>><%= category.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="button"><%= product ? 'Aktualizovat' : 'Přidat' %> produkt</button>
+          <a href="/" class="button secondary">Zrušit</a>
+        </div>
+      </form>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 E-shop Demo</p>
+  </footer>
+</body>
+</html>
+
+<!-- views/order_form.ejs -->
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vytvořit objednávku | E-shop Demo</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1>E-shop Demo</h1>
+    <nav>
+      <ul>
+        <li><a href="/">Domů</a></li>
+        <li><a href="/products">Produkty</a></li>
+        <li><a href="/orders">Objednávky</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <main>
+    <h2>Vytvořit novou objednávku</h2>
+    
+    <div class="form-container">
+      <form action="/order/add" method="POST">
+        <div class="form-group">
+          <label for="customer_name">Jméno zákazníka:</label>
+          <input type="text" id="customer_name" name="customer_name" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="product_id">Produkt:</label>
+          <select id="product_id" name="product_id" required>
+            <option value="">-- Vyberte produkt --</option>
+            <% products.forEach(product => { %>
+              <option value="<%= product.id %>"><%= product.name %> - <%= product.price %> Kč</option>
+            <% }) %>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="quantity">Počet:</label>
+          <input type="number" id="quantity" name="quantity" min="1" value="1" required>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="button">Vytvořit objednávku</button>
+          <a href="/orders" class="button secondary">Zrušit</a>
+        </div>
+      </form>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 E-shop Demo</p>
+  </footer>
+</body>
+</html>
